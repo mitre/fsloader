@@ -1,0 +1,6 @@
+variable_double 1
+variable_bool false
+
+variable_block {
+    varable_string "a string"
+}
