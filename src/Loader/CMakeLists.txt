@@ -1,10 +1,3 @@
-cmake_minimum_required(VERSION 3.14)
-
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
-set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-
 add_library(fsloader
     DecodedStream.cpp
     FilePath.cpp
@@ -15,24 +8,36 @@ add_library(fsloader
     Logging.cpp
     LoggingLoadable.cpp
     RunFileArchiveDirector.cpp
-    TokenStream.cpp)
+    TokenStream.cpp
+)
 target_link_libraries(fsloader
-        PUBLIC
+    PRIVATE
         log4cplus::log4cplus
-        mitre::cppuom)
+    INTERFACE
+        $<INSTALL_INTERFACE:log4cplus::log4cplus>
+)
+target_compile_features(fsloader PUBLIC cxx_std_20)
 target_include_directories(fsloader PUBLIC
-        ${PROJECT_SOURCE_DIR}/include
-        ${LOG4CPLUS_DIRS}
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${cppuom_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${log4cplus_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${log4cplus_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 set_target_properties(fsloader PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    CXX_EXTENSIONS NO
+    POSITION_INDEPENDENT_CODE ON
 )
-if (NOT BUILD_SHARED_LIBS)
-        target_compile_definitions(fsloader PUBLIC LOG4CPLUS_STATIC)
-endif ()
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(fsloader PUBLIC LOG4CPLUS_STATIC)
+endif()
 add_library(mitre::fsloader ALIAS fsloader)
+
+install(
+    TARGETS fsloader
+    EXPORT fsloaderTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

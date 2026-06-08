@@ -14,11 +14,28 @@ A C++ library for loading structured, human-readable data from the file system.
 
 This code is legacy.
 It works (and may even be used by some code at The MITRE Corporation) but represents an unsupported approach.
-New project work should prefer modern, standardized data input methodologies like YAML & JSON.
+New project work should prefer modern, standardized data input methodologies like YAML or JSON.
 
 ## Build
 
+Use CMake in the normal way. See the CI system for details.
+
+```bash
+cmake -S . -B build
+cmake --build build --target fsloader
+```
+
 ## Filesystem Example
+
+Read the [example input file](./example.txt).
+
+Build target: `example`
+
+```bash
+cmake -S . -B build -DFSLOADER_BUILD_EXAMPLE=ON
+cmake --build build --target example
+./build/example
+```
 
 ## MITRE Disclosure
 

@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 project(fsloader VERSION 1.0 LANGUAGES CXX)
 
-option(BUILD_EXAMPLE "Build the cppuom example executable" OFF)
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+if(DEFINED BUILD_EXAMPLE AND NOT DEFINED FSLOADER_BUILD_EXAMPLE)
+    set(FSLOADER_BUILD_EXAMPLE "${BUILD_EXAMPLE}" CACHE BOOL "Build the fsloader example executable")
+endif()
+option(FSLOADER_BUILD_EXAMPLE "Build the fsloader example executable" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 # Get CPM
@@ -11,40 +17,77 @@ CPMAddPackage(
     NAME cppuom
     GIT_REPOSITORY https://github.com/mitre/cppuom.git
     GIT_TAG 2.2
+    OPTIONS
+        "BUILD_EXAMPLE OFF"
+        "BUILD_TESTING OFF"
 )
-if (cppuom_ADDED)
+if(cppuom_ADDED)
     message(STATUS "cppuom added by CPM: ${cppuom_SOURCE_DIR}")
-else ()
-    message (ERROR "cppuom not added by CPM, cannot continue")
-endif ()
+else()
+    message(FATAL_ERROR "cppuom not added by CPM, cannot continue")
+endif()
 
 CPMAddPackage(
     NAME log4cplus
     GITHUB_REPOSITORY log4cplus/log4cplus
     GIT_TAG REL_2_1_2
     OPTIONS
-     "BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}"
-     "LOG4CPLUS_BUILD_TESTING FALSE"
-     "LOG4CPLUS_BUILD_LOGGINGSERVER FALSE"
+        "BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS}"
+        "LOG4CPLUS_BUILD_TESTING FALSE"
+        "LOG4CPLUS_BUILD_LOGGINGSERVER FALSE"
 )
-if (log4cplus_ADDED)
+if(log4cplus_ADDED)
     message(STATUS "log4cplus added by CPM: ${log4cplus_SOURCE_DIR}")
-    set (LOG4CPLUS_DIRS 
-        ${log4cplus_BINARY_DIR}/include
-        ${log4cplus_SOURCE_DIR}/include)
-else ()
-    message (ERROR "log4cplus not added by CPM, cannot continue")
-endif ()
+else()
+    message(FATAL_ERROR "log4cplus not added by CPM, cannot continue")
+endif()
 
 add_subdirectory(src/Loader)
 
-if (BUILD_EXAMPLE)
+if(FSLOADER_BUILD_EXAMPLE)
     add_executable(example example.cpp)
     target_link_libraries(example PRIVATE mitre::fsloader)
+    target_compile_features(example PRIVATE cxx_std_20)
     set_target_properties(example PROPERTIES
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
     )
-endif ()
+endif()
+
+install(
+    DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(
+    DIRECTORY ${cppuom_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.i"
+)
+
+install(
+    EXPORT fsloaderTargets
+    NAMESPACE mitre::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsloader
+)
+
+configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/.cmake/fsloaderConfig.cmake.in
+    ${PROJECT_BINARY_DIR}/fsloaderConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsloader
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+)
+
+write_basic_package_version_file(
+    ${PROJECT_BINARY_DIR}/fsloaderConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    FILES
+        ${PROJECT_BINARY_DIR}/fsloaderConfig.cmake
+        ${PROJECT_BINARY_DIR}/fsloaderConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fsloader
+)
