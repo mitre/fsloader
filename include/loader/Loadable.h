@@ -41,7 +41,10 @@
 
 class Loadable : public LoaderSupport {
   public:
-   inline static const LoaderDeprecatedMetaInfo DEFAULT_META_INFO = {false, ""};
+   static const LoaderDeprecatedMetaInfo &default_meta_info() {
+      static const LoaderDeprecatedMetaInfo info = {false, ""};
+      return info;
+   }
 
    Loadable();
 
@@ -83,7 +86,7 @@ class Loadable : public LoaderSupport {
     */
    template <class TYPE>
    void register_var(const std::string &name, TYPE *var_address) {
-      register_var(name, var_address, false, DEFAULT_META_INFO);
+      register_var(name, var_address, false, default_meta_info());
    }
 
    /**
@@ -97,7 +100,7 @@ class Loadable : public LoaderSupport {
     */
    template <class TYPE>
    void register_var(const std::string &name, TYPE *var_address, bool isRequired) {
-      register_var(name, var_address, isRequired, DEFAULT_META_INFO);
+      register_var(name, var_address, isRequired, default_meta_info());
    }
 
    /**
@@ -122,7 +125,7 @@ class Loadable : public LoaderSupport {
    template <class LOADABLE_TYPE>
    // LOADABLE_TYPE Must be a child of loadable or provide the necessary load function
    void register_named_vector_item(const std::string &name, std::vector<LOADABLE_TYPE> *target) {
-      register_named_vector_item(name, target, false, DEFAULT_META_INFO);
+      register_named_vector_item(name, target, false, default_meta_info());
    }
 
    /**
@@ -135,7 +138,7 @@ class Loadable : public LoaderSupport {
    template <class LOADABLE_TYPE>
    // LOADABLE_TYPE Must be a child of loadable or provide the necessary load function
    void register_named_vector_item(const std::string &name, std::vector<LOADABLE_TYPE> *target, bool isRequired) {
-      register_named_vector_item(name, target, isRequired, DEFAULT_META_INFO);
+      register_named_vector_item(name, target, isRequired, default_meta_info());
    }
 
    /**
@@ -164,7 +167,7 @@ class Loadable : public LoaderSupport {
    template <class LOADABLE_TYPE>
    // LOADABLE_TYPE Must be a child of loadable or provide the necessary load function
    void register_named_list(const std::string &name, std::list<LOADABLE_TYPE> *target) {
-      register_named_list(name, target, false, DEFAULT_META_INFO);
+      register_named_list(name, target, false, default_meta_info());
    }
 
    /**
@@ -178,7 +181,7 @@ class Loadable : public LoaderSupport {
    template <class LOADABLE_TYPE>
    // LOADABLE_TYPE Must be a child of loadable or provide the necessary load function
    void register_named_list(const std::string &name, std::list<LOADABLE_TYPE> *target, bool isRequired) {
-      register_named_list(name, target, isRequired, DEFAULT_META_INFO);
+      register_named_list(name, target, isRequired, default_meta_info());
    }
 
    /**
@@ -209,7 +212,7 @@ class Loadable : public LoaderSupport {
     */
    template <class LOADABLE_TYPE>
    void register_loadable(const std::string &name, LOADABLE_TYPE *target) {
-      register_loadable(name, target, false, DEFAULT_META_INFO);
+      register_loadable(name, target, false, default_meta_info());
    }
 
    /**
@@ -221,7 +224,7 @@ class Loadable : public LoaderSupport {
     */
    template <class LOADABLE_TYPE>
    void register_loadable(const std::string &name, LOADABLE_TYPE *target, bool isRequired) {
-      register_loadable(name, target, isRequired, DEFAULT_META_INFO);
+      register_loadable(name, target, isRequired, default_meta_info());
    }
 
    /**
@@ -246,7 +249,7 @@ class Loadable : public LoaderSupport {
     */
    template <class LOADABLE_TYPE>
    void register_loadable_with_brackets(const std::string &name, LOADABLE_TYPE *target) {
-      register_loadable_with_brackets(name, target, false, DEFAULT_META_INFO);
+      register_loadable_with_brackets(name, target, false, default_meta_info());
    }
 
    /**
@@ -258,7 +261,7 @@ class Loadable : public LoaderSupport {
     */
    template <class LOADABLE_TYPE>
    void register_loadable_with_brackets(const std::string &name, LOADABLE_TYPE *target, bool isRequired) {
-      register_loadable_with_brackets(name, target, isRequired, DEFAULT_META_INFO);
+      register_loadable_with_brackets(name, target, isRequired, default_meta_info());
    }
 
    /**
@@ -340,7 +343,7 @@ class Loadable : public LoaderSupport {
       assert(lookup_table.find(varnameclean) == lookup_table.end());  // The user caller to register the variable name
                                                                       // twice
 
-      std::shared_ptr<LoaderLink> new_link = std::make_unique<NativeLoaderLink<TYPE>>(var_address);
+      std::shared_ptr<LoaderLink> new_link(new NativeLoaderLink<TYPE>(var_address));
       new_link->set_must_load(isRequired);  // set required flag
       new_link->set_deprecated_info(depInfo);
 
@@ -359,7 +362,7 @@ class Loadable : public LoaderSupport {
       assert(lookup_table.find(varnameclean) == lookup_table.end());  // The user caller to register the variable name
                                                                       // twice
 
-      std::shared_ptr<LoaderLink> new_link = std::make_unique<LoadableLoaderLinkWithBrackets<LOADABLE_TYPE>>(target);
+      std::shared_ptr<LoaderLink> new_link(new LoadableLoaderLinkWithBrackets<LOADABLE_TYPE>(target));
       new_link->set_must_load(isRequired);
       new_link->set_deprecated_info(depInfo);
 
@@ -377,7 +380,7 @@ class Loadable : public LoaderSupport {
       assert(lookup_table.find(varnameclean) == lookup_table.end());  // The user caller to register the variable name
                                                                       // twice
 
-      std::shared_ptr<LoaderLink> new_link = std::make_unique<LoadableLoaderLink<LOADABLE_TYPE>>(target);
+      std::shared_ptr<LoaderLink> new_link(new LoadableLoaderLink<LOADABLE_TYPE>(target));
       new_link->set_must_load(isRequired);
       new_link->set_deprecated_info(info);
 
@@ -396,7 +399,7 @@ class Loadable : public LoaderSupport {
       assert(lookup_table.find(varnameclean) == lookup_table.end());  // The user caller to register the variable name
                                                                       // twice
 
-      std::shared_ptr<LoaderLink> new_link = std::make_unique<ListLoaderLink<LOADABLE_TYPE>>(target);
+      std::shared_ptr<LoaderLink> new_link(new ListLoaderLink<LOADABLE_TYPE>(target));
       new_link->set_must_load(isRequired);
       new_link->set_deprecated_info(info);
 
@@ -416,7 +419,7 @@ class Loadable : public LoaderSupport {
       assert(lookup_table.find(varnameclean) == lookup_table.end());  // The user caller to register the variable name
                                                                       // twice
 
-      std::shared_ptr<LoaderLink> new_link = std::make_unique<NamedElementLoaderLink<LOADABLE_TYPE>>(target);
+      std::shared_ptr<LoaderLink> new_link(new NamedElementLoaderLink<LOADABLE_TYPE>(target));
       new_link->set_must_load(isRequired);
       new_link->set_deprecated_info(info);
 

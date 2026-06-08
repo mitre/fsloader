@@ -27,6 +27,9 @@
  * Meta info for the concept of deprecated in the Loadable system.
  */
 struct LoaderDeprecatedMetaInfo {
+   LoaderDeprecatedMetaInfo(bool deprecated = false, const std::string &supersededBy = "")
+         : isDeprecated(deprecated), supersededByTagName(supersededBy) {}
+
    bool isDeprecated{false};
    std::string supersededByTagName{};
    //	std::string deprecatedInVersion; // keep this commented out until a final concept of versioning is implemented in

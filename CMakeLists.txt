@@ -47,7 +47,7 @@ add_subdirectory(src)
 if(FSLOADER_BUILD_EXAMPLE)
     add_executable(example example.cpp)
     target_link_libraries(example PRIVATE mitre::fsloader)
-    target_compile_features(example PRIVATE cxx_std_20)
+    target_compile_features(example PRIVATE cxx_std_11)
     set_target_properties(example PROPERTIES
         CXX_EXTENSIONS NO
     )

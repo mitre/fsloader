@@ -16,7 +16,7 @@ target_link_libraries(fsloader
     INTERFACE
         $<INSTALL_INTERFACE:log4cplus::log4cplus>
 )
-target_compile_features(fsloader PUBLIC cxx_std_20)
+target_compile_features(fsloader PUBLIC cxx_std_11)
 target_include_directories(fsloader PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${cppuom_SOURCE_DIR}/include>

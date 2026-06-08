@@ -2,7 +2,7 @@
 
 include(CMakeFindDependencyMacro)
 
-if(NOT TARGET log4cplus::log4cplus)
+if(NOT TARGET log4cplus::log4cplus AND NOT TARGET log4cplus::log4cplusS)
     find_dependency(log4cplus CONFIG)
 endif()
 
