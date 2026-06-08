@@ -1,0 +1,8 @@
+variable_double 1
+variable_bool false
+
+; a comment
+variable_block {
+    varable_string a_string
+    variable_read_with_cppuom 10
+}
