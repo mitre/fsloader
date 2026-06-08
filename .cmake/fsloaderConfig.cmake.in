@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET log4cplus::log4cplus)
+    find_dependency(log4cplus CONFIG)
+endif()
+
+set_and_check(FSLOADER_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/fsloaderTargets.cmake")
+check_required_components(fsloader)
