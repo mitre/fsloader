@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(fsloader VERSION 1.0 LANGUAGES CXX)
+project(fsloader VERSION 1.0.0 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
