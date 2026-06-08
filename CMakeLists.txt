@@ -42,7 +42,7 @@ else()
     message(FATAL_ERROR "log4cplus not added by CPM, cannot continue")
 endif()
 
-add_subdirectory(src/Loader)
+add_subdirectory(src)
 
 if(FSLOADER_BUILD_EXAMPLE)
     add_executable(example example.cpp)
