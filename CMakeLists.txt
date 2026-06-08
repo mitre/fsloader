@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(fsloader VERSION 1.0 LANGUAGES CXX)
 
- # TODO need to use BUILD_EXAMPLE in the example CMakeLists.txt to conditionally build the example executable
 option(BUILD_EXAMPLE "Build the cppuom example executable" OFF)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-# TODO need to use BUILD_TESTING in the test CMakeLists.txt to conditionally build the tests
 
 # Get CPM
 include(${PROJECT_SOURCE_DIR}/.cmake/get_cpm.cmake)
@@ -39,3 +37,14 @@ else ()
 endif ()
 
 add_subdirectory(src/Loader)
+
+if (BUILD_EXAMPLE)
+    add_executable(example example.cpp)
+    target_link_libraries(example PRIVATE mitre::fsloader)
+    set_target_properties(example PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
+    )
+endif ()

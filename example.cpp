@@ -18,10 +18,55 @@
 // ****************************************************************************
 
 #include <iostream>
+#include <string>
+
+#include "loader/DecodedStream.h"
+#include "loader/Loadable.h"
+
+class ExampleBlock : public Loadable {
+  public:
+   bool load(DecodedStream *input) override {
+      set_stream(input);
+      register_var("varable_string", &varable_string, true);
+      register_var("variable_read_with_cppuom", &variable_read_with_cppuom, true);
+      return complete();
+   }
+
+   std::string varable_string;
+   Units::MetersLength variable_read_with_cppuom{0.0};
+};
+
+class ExampleData : public Loadable {
+  public:
+   bool load(DecodedStream *input) override {
+      set_stream(input);
+      register_var("variable_double", &variable_double, true);
+      register_var("variable_bool", &variable_bool, true);
+      register_loadable_with_brackets("variable_block", &variable_block, true);
+      return complete();
+   }
+
+   double variable_double{0.0};
+   bool variable_bool{true};
+   ExampleBlock variable_block;
+};
 
 int main(int argc, char *argv[])
 {
-// TODO load example.txt and validate contents
-    std::cout << "Hello, world!" << std::endl;
+    DecodedStream stream;
+    if (!stream.open_file("example.txt")) {
+        std::cerr << "Failed to open example.txt" << std::endl;
+        return 1;
+    }
+
+    ExampleData data;
+    if (!data.load(&stream) || data.variable_double != 1.0 || data.variable_bool ||
+        data.variable_block.varable_string != "a_string" ||
+        data.variable_block.variable_read_with_cppuom != Units::MetersLength(10.0)) {
+        std::cerr << "example.txt validation failed" << std::endl;
+        return 1;
+    }
+
+    std::cout << "example.txt loaded and validated" << std::endl;
     return 0;
 }
