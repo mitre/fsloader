@@ -10,10 +10,12 @@
 
 A C++ library for loading structured, human-readable data from the file system.
 
-⚠️ **Deprecation Notice: this code is no longer maintained.** ⚠️
+⚠️ **Deprecation Notice: this code is minimally maintained.** ⚠️
 
 This code is legacy.
-It works (and may even be used by some code at The MITRE Corporation) but represents an unsupported approach.
+Only minimal changes will be made to it.
+All feature requests will be ignored & closed.
+It works (and may even be used by some code at The MITRE Corporation) but represents an unsupported approach to loading scenario description files from the file system.
 New project work should prefer modern, standardized data input methodologies like YAML or JSON.
 
 ## Build
