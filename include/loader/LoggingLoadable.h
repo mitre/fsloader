@@ -21,9 +21,10 @@
 
 #include <memory>
 #include <string>
+#include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 
 #include "loader/Loadable.h"
-#include "loader/Logging.h"
 
 class LoggingLoadable : public Loadable {
   public:
